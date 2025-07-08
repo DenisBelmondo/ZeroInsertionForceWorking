@@ -1,6 +1,6 @@
 namespace Belmondo.ZeroInsertionForce;
 
-public interface IState : IResettable
+public interface IState
 {
     void Enter();
     void Update(double deltaSeconds);

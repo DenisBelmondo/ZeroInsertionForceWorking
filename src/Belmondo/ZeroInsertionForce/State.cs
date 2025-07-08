@@ -5,12 +5,9 @@ public class State : IState
     public event Action? Entered;
     public event Action? Exited;
 
-    public Action? ResetDelegate;
     public Action? EnterDelegate;
     public Func<double, bool>? UpdateDelegate;
     public Action? ExitDelegate;
-
-    public void Reset() => ResetDelegate?.Invoke();
 
     public void Enter()
     {

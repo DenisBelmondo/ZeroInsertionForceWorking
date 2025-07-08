@@ -1,13 +1,12 @@
 namespace Belmondo.ZeroInsertionForce;
 
-public class Game
+public class Game : IResettable
 {
     public State? CurrentState;
     public World? World;
 
     public void Reset()
     {
-        CurrentState?.Reset();
         World = default;
     }
 
