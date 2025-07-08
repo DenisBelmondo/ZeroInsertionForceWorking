@@ -22,7 +22,7 @@ public partial class RaylibRenderer
     }
 }
 
-public partial class RaylibRenderer : IRenderer<World>
+public partial class RaylibRenderer
 {
     private Camera2D _camera = new(Vector2.Zero, Vector2.Zero, 0, 64);
 
@@ -45,16 +45,12 @@ public partial class RaylibRenderer : IRenderer<World>
     }
 }
 
-public partial class RaylibRenderer
+public partial class RaylibRenderer : IRenderer<Game>
 {
     private float _currentPlayerFrame;
 
-    public void Render(in World world, double deltaTimeSeconds)
+    private void RenderWorld(in World world, double deltaSeconds)
     {
-        BeginDrawing();
-        ClearBackground(Color.Black);
-        BeginMode2D(_camera);
-
         var player = world.Player;
         var directionRadians = player.Transform.Direction.AngleTo(Vector2.UnitY);
         var angleFrame = directionRadians * 180F / MathF.PI;
@@ -63,7 +59,7 @@ public partial class RaylibRenderer
         angleFrame /= 90;
         angleFrame = System.Math.Abs(angleFrame);
 
-        _currentPlayerFrame += (float)deltaTimeSeconds * 10;
+        _currentPlayerFrame += (float)deltaSeconds * 10;
         _currentPlayerFrame %= 3;
 
         DrawTexturePro(_corinneTexture, new((int)_currentPlayerFrame * 32, angleFrame * 32, 32 * MathF.Sign(directionRadians), 32), new(player.Transform.Position - Vector2.One / (32 / 16.0F), 1, 1), Vector2.Zero, 0, Color.White);
@@ -75,11 +71,20 @@ public partial class RaylibRenderer
         {
             DrawTexturePro(_bulletTexture, new(0, 0, 8, 8), new(bullet.Value.Value.Transform.Position - Vector2.One / (32 / 8.0F), 0.25F, 0.25F), Vector2.Zero, 0, Color.White);
         }
+    }
+
+    public void Render(in Game game, double deltaSeconds)
+    {
+        BeginDrawing();
+        ClearBackground(Color.Black);
+        BeginMode2D(_camera);
+
+        if (game.World is not null)
+        {
+            RenderWorld(game.World, deltaSeconds);
+        }
 
         EndMode2D();
-
-        // DrawText($"{angleFrame}", 0, 0, 20, Color.White);
-
         EndDrawing();
     }
 }

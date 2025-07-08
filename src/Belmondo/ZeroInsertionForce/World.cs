@@ -13,11 +13,11 @@ public class World
         public static implicit operator Spawned<T>(T value) => new(value);
     }
 
-    private InputManager _inputManager;
+    private InputManager? _inputManager;
 
     public required InputManager InputManager
     {
-        get => _inputManager;
+        get => _inputManager!;
 
         set
         {
@@ -43,7 +43,7 @@ public class World
         Vector2 moveVector = InputManager.MoveAxes;
 
         moveVector = moveVector.SafeNormalize();
-        moveVector /= 1 + Convert.ToSingle(InputManager.IsActionPressed(InputAction.SpeedChange));
+        moveVector /= 1 + Convert.ToSingle(InputManager.IsActionPressed(InputActionType.SpeedChange));
         Player.Velocity += moveVector;
         Player.Transform.Direction = (InputManager.MouseWorldPosition - Player.Transform.Position).SafeNormalize();
         Player.Transform.Position += Player.Velocity * (float)deltaSeconds;
@@ -79,9 +79,9 @@ public class World
         UpdateBullets(deltaSeconds);
     }
 
-    private void OnInputManagerActionPressed(InputAction inputAction)
+    private void OnInputManagerActionPressed(InputActionType inputAction)
     {
-        if (inputAction == InputAction.AttackPrimary && Player.BulletCooldown <= 0)
+        if (inputAction == InputActionType.AttackPrimary && Player.BulletCooldown <= 0)
         {
             SpawnBullet(new Bullet
             {

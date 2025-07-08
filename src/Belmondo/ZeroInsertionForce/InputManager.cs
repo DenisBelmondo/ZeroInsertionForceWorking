@@ -4,12 +4,12 @@ namespace Belmondo.ZeroInsertionForce;
 
 public class InputManager
 {
-    public event Action<InputAction>? InputActionPressed;
+    public event Action<InputActionType>? InputActionPressed;
 
-    private readonly Queue<InputAction> _inputQueue = [];
-    private readonly bool[] _pressedActions = new bool[Enum.GetValues<InputAction>().Length];
+    private readonly Queue<InputActionType> _inputQueue = [];
+    private readonly bool[] _pressedActions = new bool[Enum.GetValues<InputActionType>().Length];
 
-    public required Func<InputAction, bool> IsActionPressedDelegate;
+    public required Func<InputActionType, bool> IsActionPressedDelegate;
     public required Func<Vector2> GetMouseWorldPositionDelegate;
     public required Func<bool> HasRequestedQuitDelegate;
     public Vector2 MoveAxes;
@@ -19,7 +19,7 @@ public class InputManager
     {
         _inputQueue.Clear();
 
-        foreach (var ia in Enum.GetValues<InputAction>())
+        foreach (var ia in Enum.GetValues<InputActionType>())
         {
             bool isActionPressed = IsActionPressedDelegate.Invoke(ia);
 
@@ -31,10 +31,10 @@ public class InputManager
             _pressedActions[(int)ia] = isActionPressed;
         }
 
-        var rightIsPressed = IsActionPressedDelegate.Invoke(InputAction.MoveRight);
-        var leftIsPressed = IsActionPressedDelegate.Invoke(InputAction.MoveLeft);
-        var downIsPressed = IsActionPressedDelegate.Invoke(InputAction.MoveDown);
-        var upIsPressed = IsActionPressedDelegate.Invoke(InputAction.MoveUp);
+        var rightIsPressed = IsActionPressedDelegate.Invoke(InputActionType.MoveRight);
+        var leftIsPressed = IsActionPressedDelegate.Invoke(InputActionType.MoveLeft);
+        var downIsPressed = IsActionPressedDelegate.Invoke(InputActionType.MoveDown);
+        var upIsPressed = IsActionPressedDelegate.Invoke(InputActionType.MoveUp);
         var horizontalAxis = Convert.ToSingle(rightIsPressed) - Convert.ToSingle(leftIsPressed);
         var verticalAxis = Convert.ToSingle(downIsPressed) - Convert.ToSingle(upIsPressed);
 
@@ -51,6 +51,6 @@ public class InputManager
         }
     }
 
-    public bool IsActionPressed(InputAction inputAction) => _pressedActions[(int)inputAction];
+    public bool IsActionPressed(InputActionType inputAction) => _pressedActions[(int)inputAction];
     public bool HasRequestedQuit() => HasRequestedQuitDelegate();
 }

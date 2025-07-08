@@ -1,6 +1,6 @@
 namespace Belmondo.ZeroInsertionForce;
 
-public enum InputAction
+public enum InputActionType
 {
     MoveUp,
     MoveRight,
