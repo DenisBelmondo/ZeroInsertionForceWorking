@@ -15,26 +15,35 @@ public sealed class InputManager
     public Vector2 MoveAxes;
     public Vector2 MouseWorldPosition;
 
-    public void Update()
+    public void SimulateInputAction(InputActionType inputActionType)
+    {
+        _pressedActions[(int)inputActionType] = true;
+        InputActionPressed?.Invoke(inputActionType);
+    }
+
+    public void Update(bool isSimulating)
     {
         _inputQueue.Clear();
 
-        foreach (var ia in Enum.GetValues<InputActionType>())
+        if (!isSimulating)
         {
-            bool isActionPressed = IsActionPressedDelegate.Invoke(ia);
-
-            if (isActionPressed)
+            foreach (var ia in Enum.GetValues<InputActionType>())
             {
-                _inputQueue.Enqueue(ia);
-            }
+                bool isActionPressed = IsActionPressedDelegate.Invoke(ia);
 
-            _pressedActions[(int)ia] = isActionPressed;
+                if (isActionPressed)
+                {
+                    _inputQueue.Enqueue(ia);
+                }
+
+                _pressedActions[(int)ia] = isActionPressed;
+            }
         }
 
-        var rightIsPressed = IsActionPressedDelegate.Invoke(InputActionType.MoveRight);
-        var leftIsPressed = IsActionPressedDelegate.Invoke(InputActionType.MoveLeft);
-        var downIsPressed = IsActionPressedDelegate.Invoke(InputActionType.MoveDown);
-        var upIsPressed = IsActionPressedDelegate.Invoke(InputActionType.MoveUp);
+        var rightIsPressed = IsActionPressed(InputActionType.MoveRight);
+        var leftIsPressed = IsActionPressed(InputActionType.MoveLeft);
+        var downIsPressed = IsActionPressed(InputActionType.MoveDown);
+        var upIsPressed = IsActionPressed(InputActionType.MoveUp);
         var horizontalAxis = Convert.ToSingle(rightIsPressed) - Convert.ToSingle(leftIsPressed);
         var verticalAxis = Convert.ToSingle(downIsPressed) - Convert.ToSingle(upIsPressed);
 

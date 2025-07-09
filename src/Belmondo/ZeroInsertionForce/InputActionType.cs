@@ -8,4 +8,5 @@ public enum InputActionType
     MoveLeft,
     AttackPrimary,
     SpeedChange,
+    Replay,
 }

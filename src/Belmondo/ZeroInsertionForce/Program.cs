@@ -20,6 +20,8 @@ internal sealed class Program
         using var renderer = new RaylibRenderer();
         using var audioPlayer = new RaylibAudioPlayer();
 
+        var commandSequence = new CommandSequence();
+
         _gameRenderer = renderer;
         _audioPlayer = audioPlayer;
 
@@ -44,24 +46,54 @@ internal sealed class Program
         renderer.Initialize();
         RaylibAudioPlayer.Initialize();
 
+        var isSimulating = false;
+        var frame = 0;
+
         double previousTime = GetTime();
+        double currentTime = default;
         double lag = default;
+
+        _inputManager.InputActionPressed += inputAction =>
+        {
+            if (inputAction == InputActionType.Replay)
+            {
+                world.Reset();
+                isSimulating = true;
+                frame = 0;
+                return;
+            }
+
+            if (!isSimulating)
+            {
+                commandSequence.Record(frame, () =>
+                {
+                    _inputManager.SimulateInputAction(inputAction);
+                });
+            }
+        };
 
         while (!_inputManager.HasRequestedQuit())
         {
-            double currentTime = GetTime();
+            currentTime = GetTime();
+
             double deltaTime = currentTime - previousTime;
 
             lag += deltaTime;
             lag = Math.Min(lag, MAX_FRAME_SKIP * TICK_RATE_SECONDS);
             previousTime = currentTime;
 
-            _inputManager.Update();
+            _inputManager.Update(isSimulating);
 
             while (lag >= TICK_RATE_SECONDS)
             {
+                if (isSimulating)
+                {
+                    commandSequence.TryExecuteAllAt(frame);
+                }
+
                 world.Update(TICK_RATE_SECONDS);
                 lag -= TICK_RATE_SECONDS;
+                frame += 1;
             }
 
             _gameRenderer.Render(in game, deltaTime);
@@ -76,6 +108,7 @@ internal sealed class Program
         InputActionType.MoveLeft => IsKeyDown(KeyboardKey.A),
         InputActionType.AttackPrimary => IsKeyDown(KeyboardKey.Space),
         InputActionType.SpeedChange => IsKeyDown(KeyboardKey.LeftShift) || IsKeyDown(KeyboardKey.RightShift),
+        InputActionType.Replay => IsKeyPressed(KeyboardKey.Backspace),
         _ => false,
     };
 }
