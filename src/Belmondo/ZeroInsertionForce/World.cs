@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace Belmondo.ZeroInsertionForce;
 
-public class World
+public partial class World
 {
     public struct Spawned<T>(T value)
     {
@@ -12,6 +12,13 @@ public class World
         public static implicit operator T(Spawned<T> spawned) => spawned.Value;
         public static implicit operator Spawned<T>(T value) => new(value);
     }
+
+    private const float MAX_X = 6;
+    private const float MAX_Y = 4;
+    private const float MAX_RADIUS = 100;
+    private const float MAX_RADIUS_SQUARED = MAX_RADIUS * MAX_RADIUS;
+    private const double PLAYER_COOLDOWN = 1.0 / 8.0;
+    private const int PLAYER_MOVE_SPEED = 20;
 
     private InputManager? _inputManager;
 
@@ -28,15 +35,9 @@ public class World
 
     public required IAudioPlayer AudioPlayer;
 
-    public Player Player = new()
-    {
-        Transform = new()
-        {
-            Direction = Vector2.UnitX,
-        },
-    };
-
     public readonly SparseSet<Spawned<Bullet>> Bullets = [];
+
+    public Player Player;
 
     private void UpdatePlayer(double deltaSeconds)
     {
@@ -47,8 +48,28 @@ public class World
         Player.Velocity += moveVector;
         Player.Transform.Direction = (InputManager.MouseWorldPosition - Player.Transform.Position).SafeNormalize();
         Player.Transform.Position += Player.Velocity * (float)deltaSeconds;
-        Player.Velocity = Player.Velocity.Lerp(Vector2.Zero, 4 * (float)deltaSeconds);
 
+        if (Player.Transform.Position.X < -MAX_X)
+        {
+            Player.Transform.Position.X = MAX_X;
+        }
+
+        if (Player.Transform.Position.X > MAX_X)
+        {
+            Player.Transform.Position.X = -MAX_X;
+        }
+
+        if (Player.Transform.Position.Y < -MAX_Y)
+        {
+            Player.Transform.Position.Y = MAX_Y;
+        }
+
+        if (Player.Transform.Position.Y > MAX_Y)
+        {
+            Player.Transform.Position.Y = -MAX_Y;
+        }
+
+        Player.Velocity = Player.Velocity.Lerp(Vector2.Zero, 4 * (float)deltaSeconds);
         Player.BulletCooldown = System.Math.Max(Player.BulletCooldown - deltaSeconds, 0);
     }
 
@@ -58,7 +79,7 @@ public class World
         {
             bullet.Value.Value.Transform.Position += bullet.Value.Value.Velocity * (float)deltaSeconds;
 
-            if (bullet.Value.Value.Transform.Position.LengthSquared() > 100)
+            if (bullet.Value.Value.Transform.Position.LengthSquared() > MAX_RADIUS_SQUARED)
             {
                 bullet.Value.IsFlaggedForDeletion = true;
             }
@@ -89,10 +110,10 @@ public class World
                 {
                     Position = Player.Transform.Position + Player.Transform.Direction,
                 },
-                Velocity = Player.Transform.Direction * 20,
+                Velocity = Player.Transform.Direction * PLAYER_MOVE_SPEED,
             });
 
-            Player.BulletCooldown = 1.0 / 8.0;
+            Player.BulletCooldown = PLAYER_COOLDOWN;
         }
     }
 }
