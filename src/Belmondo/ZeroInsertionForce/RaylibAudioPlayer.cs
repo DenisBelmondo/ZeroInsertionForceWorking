@@ -3,7 +3,7 @@ using static Raylib_cs.Raylib;
 
 namespace Belmondo.ZeroInsertionForce;
 
-public partial class RaylibAudioPlayer : IAudioPlayer
+public sealed partial class RaylibAudioPlayer : IAudioPlayer
 {
     private static readonly Sound[] _sounds = new Sound[Enum.GetValues<SoundID>().Length];
 
@@ -32,11 +32,11 @@ public partial class RaylibAudioPlayer : IAudioPlayer
     }
 }
 
-public partial class RaylibAudioPlayer : IDisposable
+partial class RaylibAudioPlayer : IDisposable
 {
     private bool _wasDisposed;
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool _)
     {
         if (!_wasDisposed)
         { /*
@@ -58,13 +58,13 @@ public partial class RaylibAudioPlayer : IDisposable
     ~RaylibAudioPlayer()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: false);
+        Dispose(false);
     }
 
     public void Dispose()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: true);
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 }

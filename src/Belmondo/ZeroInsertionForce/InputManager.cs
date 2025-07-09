@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace Belmondo.ZeroInsertionForce;
 
-public class InputManager
+public sealed class InputManager
 {
     public event Action<InputActionType>? InputActionPressed;
 

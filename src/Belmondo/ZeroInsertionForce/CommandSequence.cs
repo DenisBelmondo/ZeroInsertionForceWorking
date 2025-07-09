@@ -1,6 +1,6 @@
 namespace Belmondo.ZeroInsertionForce;
 
-public class CommandSequence
+public sealed class CommandSequence
 {
     public Dictionary<double, List<Command>> Commands = [];
 

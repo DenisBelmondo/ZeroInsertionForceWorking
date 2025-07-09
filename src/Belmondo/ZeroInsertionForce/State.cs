@@ -1,6 +1,6 @@
 namespace Belmondo.ZeroInsertionForce;
 
-public class State : IState
+public sealed class State : IState
 {
     public event Action? Entered;
     public event Action? Exited;

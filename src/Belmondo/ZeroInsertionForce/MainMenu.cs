@@ -1,6 +1,6 @@
 namespace Belmondo.ZeroInsertionForce;
 
-public class MainMenu
+public sealed class MainMenu
 {
     public enum Option
     {

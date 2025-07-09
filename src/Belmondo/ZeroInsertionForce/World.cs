@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace Belmondo.ZeroInsertionForce;
 
-public partial class World
+public sealed partial class World
 {
     public struct Spawned<T>(T value)
     {

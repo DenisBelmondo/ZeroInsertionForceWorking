@@ -1,6 +1,6 @@
 namespace Belmondo.ZeroInsertionForce;
 
-public class Game : IResettable
+public sealed class Game : IResettable
 {
     public State? CurrentState;
     public World? World;

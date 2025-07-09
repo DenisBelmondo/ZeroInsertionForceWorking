@@ -2,7 +2,7 @@
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 
-internal class Program
+internal sealed class Program
 {
     private const double TICK_RATE_SECONDS = 1.0 / 30.0;
     private const int MAX_FRAME_SKIP = 30;
@@ -13,10 +13,12 @@ internal class Program
 
     private static void Main() => new Program().Run();
 
+    private Program() { }
+
     private void Run()
     {
-        var renderer = new RaylibRenderer();
-        var audioPlayer = new RaylibAudioPlayer();
+        using var renderer = new RaylibRenderer();
+        using var audioPlayer = new RaylibAudioPlayer();
 
         _gameRenderer = renderer;
         _audioPlayer = audioPlayer;
@@ -64,9 +66,6 @@ internal class Program
 
             _gameRenderer.Render(in game, deltaTime);
         }
-
-        audioPlayer.Dispose();
-        renderer.Dispose();
     }
 
     private static bool IsInputActionPressed(InputActionType inputAction) => inputAction switch
