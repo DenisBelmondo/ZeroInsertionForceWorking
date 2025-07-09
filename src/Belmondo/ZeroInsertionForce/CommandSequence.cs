@@ -4,7 +4,7 @@ public class CommandSequence
 {
     public Dictionary<double, List<Command>> Commands = [];
 
-    public void Record(double time, in Command command)
+    public int Record(double time, in Command command)
     {
         if (!Commands.TryGetValue(time, out List<Command>? commands))
         {
@@ -12,7 +12,11 @@ public class CommandSequence
             Commands.Add(time, commands);
         }
 
+        var index = commands.Count;
+
         commands.Add(command);
+
+        return index;
     }
 
     public void TryExecuteAllAt(double time)

@@ -24,6 +24,35 @@ public partial class RaylibRenderer
 
 public partial class RaylibRenderer
 {
+    private const string FULL_SCREEN_VERTEX_SHADER_GL33_SRC =
+    """
+        #version 330 core
+
+        layout (location = 0) in vec3 vertexPosition;
+        layout (location = 1) in vec2 vertexTexCoord;
+
+        out vec2 fragTexCoord;
+
+        void main() {
+            gl_Position = vec4(vertexPosition, 1.0);
+            fragTexCoord = vertexTexCoord;
+        }
+    """;
+
+    private const string FRAGMENT_SHADER_GL33_SRC =
+    """
+        #version 330 core
+
+        uniform sampler2D depthTexture;
+        uniform sampler2D albedoTexture;
+
+        out vec4 finalColor;
+
+        void main() {
+            finalColor = vec4(1.0);
+        }
+    """;
+
     private Camera2D _camera = new(Vector2.Zero, Vector2.Zero, 0, 64);
 
     public Vector2 GetMouseWorldPosition() => GetScreenToWorld2D(GetMousePosition(), _camera);
@@ -47,6 +76,12 @@ public partial class RaylibRenderer
 
 public partial class RaylibRenderer : IRenderer<Game>
 {
+    private struct SuperBuffer
+    {
+        public uint FrameBuffer;
+        public uint DepthRenderBuffer;
+    }
+
     private float _currentPlayerFrame;
 
     private void RenderWorld(in World world, double deltaSeconds)
