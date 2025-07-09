@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace Belmondo.ZeroInsertionForce;
 
-public sealed partial class World
+public sealed partial class World : IResettable
 {
     public struct Spawned<T>(T value)
     {
@@ -35,10 +35,18 @@ public sealed partial class World
 
     public required IAudioPlayer AudioPlayer;
 
-    public readonly SparseSet<Spawned<Bullet>> Bullets = [];
-
     public Player Player;
+    public SparseSet<Spawned<Bullet>> Bullets = [];
 
+    public void Reset()
+    {
+        Player = new();
+        Bullets = [];
+    }
+}
+
+partial class World
+{
     private void UpdatePlayer(double deltaSeconds)
     {
         Vector2 moveVector = InputManager.MoveAxes;
